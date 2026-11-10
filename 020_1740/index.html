@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>大衆酒場アメリカ フード診断</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue.js (Vue 3) -->
+    <script src="https://unpkg.com/vue@3.4.38/dist/vue.global.prod.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Playfair+Display:ital,wght@1,600&family=Yellowtail&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy: #0d1626;
+            --navy-2: #16233a;
+            --navy-3: #1f3050;
+            --cream: #f2e8d5;
+            --red: #b8423a;
+            --gold: #d4a85a;
+            --muted: #9aa6b8;
+        }
+        body {
+            min-height: 100vh;
+            min-height: 100dvh; /* スマホのアドレスバー分を考慮 */
+            font-family: 'Noto Sans JP', sans-serif;
+            color: var(--cream);
+            background-color: var(--navy);
+            /* 控えめな星条旗モチーフ：うっすらストライプ＋星 */
+            background-image:
+                radial-gradient(ellipse at 50% 0%, rgba(212,168,90,0.14), transparent 60%),
+                radial-gradient(ellipse at 50% 120%, rgba(184,66,58,0.22), transparent 55%),
+                repeating-linear-gradient(180deg, rgba(255,255,255,0.025) 0 22px, transparent 22px 44px);
+        }
+        .stars-bg {
+            background-image: radial-gradient(rgba(242,232,213,0.35) 1px, transparent 1.5px);
+            background-size: 28px 28px;
+            mask-image: linear-gradient(180deg, #000 0%, transparent 45%);
+            -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 45%);
+        }
+        .font-head { font-family: 'Oswald', 'Noto Sans JP', sans-serif; letter-spacing: 0.08em; }
+        .font-serif-it { font-family: 'Playfair Display', serif; font-style: italic; }
+        .font-neon { font-family: 'Yellowtail', cursive; }
+        .text-gold { color: var(--gold); }
+        .text-cream { color: var(--cream); }
+        .text-muted { color: var(--muted); }
+        .text-red { color: var(--red); }
+
+        .fade-enter-active { transition: opacity 0.9s ease; }
+        .fade-leave-active { transition: opacity 0.5s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        #chartjs-tooltip { display: none !important; }
+
+        /* ネオンサイン */
+        .neon {
+            color: #fff4e0;
+            text-shadow: 0 0 4px #fff, 0 0 12px var(--gold), 0 0 28px rgba(212,168,90,0.7), 0 0 48px rgba(184,66,58,0.5);
+            animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.55; }
+        }
+        .intro-fade { animation: introIn 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; opacity: 0; }
+        @keyframes introIn {
+            0% { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(10px); }
+            100% { opacity: 1; transform: none; filter: blur(0); }
+        }
+
+        /* 区切り線（★ ― ★） */
+        .rule { display: flex; align-items: center; gap: 10px; color: var(--gold); font-size: 10px; }
+        .rule::before, .rule::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,90,0.6), transparent); }
+
+        /* ボタン */
+        .btn-primary {
+            background: var(--red); color: var(--cream);
+            border: 1px solid rgba(242,232,213,0.25);
+            box-shadow: 0 6px 20px rgba(184,66,58,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+            transition: transform .15s ease, background .2s ease;
+        }
+        .btn-primary:hover { background: #c84d44; }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-ghost {
+            border: 1px solid rgba(212,168,90,0.6); color: var(--gold);
+            transition: background .2s ease;
+        }
+        .btn-ghost:hover { background: rgba(212,168,90,0.1); }
+        /* トップ・質問ページはスマホ1画面に収める（高さに合わせて自動で縮む） */
+        .fit-screen { height: calc(100vh - 2rem); height: calc(100dvh - 2rem); }
+        @media (min-height: 461px) {
+            html.lock, html.lock body { overflow: hidden; height: 100%; overscroll-behavior: none; }
+        }
+        .statue { height: clamp(44px, 13dvh, 128px); width: auto; aspect-ratio: 1 / 2; }
+        .top-title { font-size: clamp(40px, 8.5dvh, 60px); }
+        .top-lead { font-size: clamp(16px, 3.2dvh, 22px); }
+
+        /* トップのメニューボタン（イラスト付き） */
+        .menu-btn { min-height: clamp(56px, 10dvh, 72px); text-decoration: none; transition: transform .15s ease; }
+        .menu-btn:active { transform: scale(0.97); }
+        .menu-icon { width: clamp(40px, 7dvh, 52px); height: clamp(40px, 7dvh, 52px); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        /* パネル */
+        .panel {
+            background: linear-gradient(180deg, rgba(31,48,80,0.75), rgba(13,22,38,0.85));
+            border: 1px solid rgba(212,168,90,0.28);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+            backdrop-filter: blur(6px);
+        }
+
+        /* 質問カード */
+        .q-card {
+            background: rgba(22,35,58,0.9);
+            border: 1px solid rgba(242,232,213,0.15);
+            transition: border-color .25s ease, transform .2s ease, box-shadow .25s ease;
+        }
+        .q-card:hover { border-color: rgba(212,168,90,0.7); box-shadow: 0 0 18px rgba(212,168,90,0.18); }
+        .q-card:active { transform: scale(0.98); }
+
+        /* ローディング：回転するボール */
+        .spin-ball { animation: spin 1.1s linear infinite, bounce 1.1s ease-in-out infinite alternate; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes bounce { from { translate: 0 -10px; } to { translate: 0 10px; } }
+
+        /* タイプ発表エンブレム */
+        .emblem {
+            width: 132px; height: 132px; border-radius: 9999px;
+            border: 2px solid var(--gold);
+            outline: 1px solid rgba(212,168,90,0.4); outline-offset: 5px;
+            background: radial-gradient(circle at 50% 35%, var(--navy-3), var(--navy));
+            box-shadow: 0 0 40px rgba(212,168,90,0.2);
+            animation: stamp .7s cubic-bezier(.2,1.6,.4,1) both;
+        }
+        @keyframes stamp { from { transform: scale(1.8) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+        .rise { animation: rise .8s ease both; }
+        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+        /* わくわく演出：スタジアムのスポットライト */
+        .stage { background: radial-gradient(ellipse at 50% 100%, rgba(31,48,80,0.9), #05090f 70%); }
+        .count-pop { animation: countPop .7s cubic-bezier(.2,1.4,.4,1) both; }
+        @keyframes countPop { 0% { transform: scale(2.2); opacity: 0; } 40% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        /* 打席演出 */
+        .bat { transform-origin: 166px 322px; transform: rotate(-35deg); transition: transform .14s ease-out; }
+        .bat.swung { transform: rotate(160deg); }
+        .flash { position: absolute; inset: 0; background: #fff4e0; opacity: 0; pointer-events: none; transition: opacity .25s ease; z-index: 20; }
+        .flash.on { opacity: .35; transition: none; }
+        .burst-star {
+            position: absolute; left: 0; top: 0;
+            color: var(--gold); font-size: 14px; opacity: 0;
+            animation: burst 1.1s ease-out forwards;
+        }
+        @keyframes burst {
+            0% { transform: translate(-50%, -50%) rotate(var(--a)) translateY(0) scale(0.4); opacity: 1; }
+            100% { transform: translate(-50%, -50%) rotate(var(--a)) translateY(-60px) scale(1); opacity: 0; }
+        }
+
+        /* おすすめラインナップカード */
+        .lineup-card {
+            background: linear-gradient(135deg, rgba(242,232,213,0.97), rgba(232,218,192,0.97));
+            color: var(--navy);
+            border-top: 4px solid var(--red);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            opacity: 0;
+            animation: slideIn .7s cubic-bezier(.2,1,.3,1) forwards;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px) scale(0.96); } to { opacity: 1; transform: none; } }
+        .order-badge {
+            font-family: 'Oswald', sans-serif;
+            background: var(--navy); color: var(--gold);
+            border: 2px solid var(--gold);
+        }
+
+        /* メニューリクエスト（アンケート） */
+        .req-input {
+            background: rgba(13,22,38,0.8); color: var(--cream);
+            border: 1px solid rgba(242,232,213,0.2);
+            font-size: 16px; /* iOSのズーム防止 */
+        }
+        .req-input::placeholder { color: rgba(154,166,184,0.7); }
+        .req-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,168,90,0.15); }
+        .req-overlay { background: rgba(5,9,15,0.72); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+        .popup-enter-active { transition: opacity .7s ease; }
+        .popup-leave-active { transition: opacity .6s ease .9s; } /* お礼を少し見せてから消える */
+        .popup-enter-from, .popup-leave-to { opacity: 0; }
+        .popup-enter-active .req-card { transition: transform .8s cubic-bezier(.2,1,.3,1); }
+        .popup-leave-active .req-card { transition: transform .6s ease .9s; }
+        .popup-enter-from .req-card { transform: translateY(24px) scale(.96); }
+        .popup-leave-to .req-card { transform: translateY(-12px) scale(.98); }
+    </style>
+</head>
+
+<body class="m-0 p-0 relative overflow-x-hidden">
+    <div class="stars-bg fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- 野球ボールのアイコン（<use href="#baseball"> で再利用） -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="baseball" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10.5" fill="#f7f1e3" stroke="#c9bfa8" stroke-width="1"/>
+            <path d="M6.2 3.6 C9.6 8.4 9.6 15.6 6.2 20.4 M17.8 3.6 C14.4 8.4 14.4 15.6 17.8 20.4" fill="none" stroke="#b8423a" stroke-width="1.1"/>
+            <path d="M6.6 6.2 L8.4 5.5 M7.6 8.6 L9.4 8.2 M8.1 11.2 L9.9 11.1 M8.1 13.6 L9.9 13.8 M7.6 16.1 L9.4 16.6 M6.6 18.4 L8.4 19.1 M17.4 6.2 L15.6 5.5 M16.4 8.6 L14.6 8.2 M15.9 11.2 L14.1 11.1 M15.9 13.6 L14.1 13.8 M16.4 16.1 L14.6 16.6 M17.4 18.4 L15.6 19.1" stroke="#b8423a" stroke-width="0.9" stroke-linecap="round"/>
+        </symbol>
+    </svg>
+
+    <div id="app" class="relative z-10 w-full min-h-screen min-h-[100dvh] flex flex-col items-center px-4 py-4">
+
+        <transition name="fade" mode="out-in">
+
+            <!-- 0. イントロ（ネオンサイン） -->
+            <div v-if="step === 'intro'" key="intro" class="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer text-center" @click="skipIntro">
+                <div class="intro-fade flex flex-col items-center">
+                    <div class="text-gold text-xs font-head tracking-[0.5em] mb-4">★ ★ ★ ★ ★</div>
+                    <div class="font-neon neon text-6xl sm:text-7xl leading-none">America</div>
+                    <div class="font-head text-sm text-cream mt-4 tracking-[0.4em]">大衆酒場アメリカ</div>
+                    <div class="text-muted text-[11px] mt-10 tracking-widest">TAP TO ENTER</div>
+                </div>
+            </div>
+
+            <!-- 1. トップ画面 -->
+            <div v-else-if="step === 'start'" key="start" class="fit-screen w-full max-w-md mx-auto flex flex-col items-center justify-center text-center">
+                <!-- 自由の女神 -->
+                <svg viewBox="0 0 100 200" class="statue mb-[1.2dvh] drop-shadow-[0_0_16px_rgba(212,168,90,0.45)]" aria-hidden="true">
+                    <!-- 炎 -->
+                    <path d="M74 4 C81 12 84 19 80 26 C78 30 70 30 68 26 C65 19 69 12 74 4Z" fill="#d4a85a"/>
+                    <path d="M74 13 C77 18 77 22 75 25 C74 27 72 26 72 24 C71 21 72 17 74 13Z" fill="#fff4e0" opacity=".9"/>
+                    <g fill="#f2e8d5">
+                        <!-- トーチと掲げた右腕 -->
+                        <path d="M65 30 H83 L79 38 H69 Z"/>
+                        <path d="M70 38 H78 L68 78 L58 76 Z"/>
+                        <!-- 王冠（7本のスパイク） -->
+                        <path d="M45 58 L30 44 L41 56 Z M45 56 L36 37 L44 54 Z M47 55 L46 33 L49 54 Z M50 55 L57 35 L52 55 Z M52 57 L64 42 L54 58 Z M44 61 L27 55 L43 63 Z M54 61 L67 53 L55 63 Z"/>
+                        <!-- 頭 -->
+                        <circle cx="49" cy="64" r="8"/>
+                        <!-- ローブ -->
+                        <path d="M40 74 Q49 70 60 74 L64 82 C66 110 68 135 70 160 H28 C30 135 31 110 34 84 Z"/>
+                        <!-- 左手の銘板 -->
+                        <path d="M26 92 L38 88 L42 112 L30 116 Z"/>
+                        <!-- 台座 -->
+                        <path d="M24 162 H76 V170 H24 Z M18 172 H82 V196 H18 Z"/>
+                    </g>
+                    <!-- ローブのひだ・銘板の縁 -->
+                    <path d="M44 86 C42 110 41 135 40 158 M52 84 C53 110 55 135 57 158 M60 90 C62 115 63 135 64 158" stroke="#0d1626" stroke-width="1.2" fill="none" opacity=".55"/>
+                    <path d="M28.5 93.5 L37 90.5 L40.5 110.5 L31.5 113.5 Z" stroke="#0d1626" stroke-width="1" fill="none" opacity=".55"/>
+                    <path d="M18 180 H82" stroke="#0d1626" stroke-width="1" opacity=".4"/>
+                </svg>
+
+                <div class="font-head text-gold text-xs tracking-[0.45em] mb-[0.8dvh]">TAISHU SAKABA</div>
+                <h1 class="font-neon neon top-title leading-none mb-[1dvh]">America</h1>
+                <div class="rule w-48 mb-[2.2dvh]">★</div>
+
+                <h2 class="top-lead font-black tracking-wider mb-[1.6dvh] leading-snug">
+                    今夜のあなたに<br>ぴったりの一皿を。
+                </h2>
+                <p class="text-[13px] text-muted leading-normal mb-[2.6dvh]">
+                    <span class="text-gold font-bold text-sm">8つ</span>の直感質問に答えるだけ。<br>
+                    あなたのタイプと、今夜の<br><span class="text-cream font-bold">スターティングラインナップ</span><br>（おすすめ3品）を発表します。
+                </p>
+
+                <!-- 診断へ -->
+                <button @click="startQuiz" class="menu-btn btn-primary w-full rounded-lg flex items-center gap-3 px-4 py-2 text-left">
+                    <span class="menu-icon" style="background: rgba(242,232,213,0.14);">
+                        <!-- バットとボール -->
+                        <svg viewBox="0 0 48 48" class="w-11 h-11" aria-hidden="true">
+                            <path d="M38 6 C41 4 44 7 42 10 L19 33 L15 29 Z" fill="#e2b77a" stroke="#7a4f2a" stroke-width="1.5" stroke-linejoin="round"/>
+                            <path d="M15 29 L19 33 L13 39 C12 40 10 40 9 39 C8 38 8 36 9 35 Z" fill="#7a4f2a"/>
+                            <circle cx="10.5" cy="37.5" r="2.2" fill="#5a3a1e"/>
+                            <circle cx="34" cy="33" r="7.5" fill="#f7f1e3" stroke="#c9bfa8" stroke-width="1"/>
+                            <path d="M29.5 27.5 C32 31 32 35 29.5 38.5 M38.5 27.5 C36 31 36 35 38.5 38.5" fill="none" stroke="#b8423a" stroke-width="1.2"/>
+                        </svg>
+                    </span>
+                    <span class="flex-1">
+                        <span class="block font-black text-base leading-tight whitespace-nowrap">フード診断スタート</span>
+                        <span class="block text-[11px] opacity-80 mt-0.5">8つの質問で、今夜の一皿を発見</span>
+                    </span>
+                    <span class="text-xl opacity-80">▶</span>
+                </button>
+
+                <!-- その前に遊ぶ -->
+                <a href="../foodtower_1740/" @click="logGameClick" class="menu-btn btn-ghost w-full rounded-lg flex items-center gap-3 px-4 py-2 mt-[1.4dvh] text-left" style="background: rgba(31,48,80,0.6);">
+                    <span class="menu-icon" style="background: rgba(212,168,90,0.14);">
+                        <!-- 積み上がったバーガー -->
+                        <svg viewBox="0 0 48 48" class="w-11 h-11" aria-hidden="true">
+                            <path d="M9 17 C9 6 39 6 39 17 Z" fill="#d58a3c"/>
+                            <g fill="#fff2d2"><ellipse cx="18" cy="11" rx="1.4" ry=".8"/><ellipse cx="25" cy="9" rx="1.4" ry=".8"/><ellipse cx="31" cy="12" rx="1.4" ry=".8"/></g>
+                            <path d="M8 19 L11 17 L14 19 L17 17 L20 19 L23 17 L26 19 L29 17 L32 19 L35 17 L38 19 L40 18 L40 21 L8 21 Z" fill="#6fae3c"/>
+                            <rect x="9" y="21" width="30" height="3" fill="#f2b632"/>
+                            <path d="M14 24 L17 28 L20 24 Z" fill="#f2b632"/>
+                            <rect x="8" y="24" width="32" height="7" rx="3.5" fill="#5a3420"/>
+                            <rect x="10" y="31" width="28" height="3" rx="1.5" fill="#d0413a"/>
+                            <rect x="9" y="34" width="30" height="7" rx="3" fill="#d58a3c"/>
+                            <path d="M4 44 H44" stroke="#f2e8d5" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span class="flex-1">
+                        <span class="block font-black text-base leading-tight text-cream whitespace-nowrap">その前に遊んでみる</span>
+                        <span class="block text-[11px] mt-0.5">BURGER STACK｜高く積んでみよう</span>
+                    </span>
+                    <span class="text-xl">▶</span>
+                </a>
+                <div class="text-[10px] text-muted mt-[2dvh] font-head tracking-[0.3em]">EST. AMERICA ・ BEER ・ GOOD FOOD</div>
+            </div>
+
+            <!-- 2. 質問画面（全8問） -->
+            <div v-else-if="step === 'quiz'" key="quiz" class="fit-screen w-full max-w-[360px] sm:max-w-[400px] mx-auto flex flex-col">
+                <div class="w-full flex items-center justify-between mb-2">
+                    <button @click="goBack" class="text-muted hover:text-white text-xs font-head tracking-widest flex items-center transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        BACK
+                    </button>
+                    <div class="font-head text-sm text-muted tracking-widest flex items-center gap-1.5">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4" aria-hidden="true"><use href="#baseball"/></svg>
+                        INNING <span class="text-gold text-lg">{{ currentQuestionIndex + 1 }}</span> / 8
+                    </div>
+                </div>
+                <!-- 8イニング分の野球ボール -->
+                <div class="w-full flex justify-between items-center mb-[2.5dvh] px-1">
+                    <svg v-for="n in 8" :key="n" viewBox="0 0 24 24" class="w-6 h-6 transition-all duration-300"
+                         :class="n === currentQuestionIndex + 1 ? 'scale-110 drop-shadow-[0_0_6px_rgba(212,168,90,0.8)]' : ''"
+                         :style="{ opacity: n <= currentQuestionIndex + 1 ? 1 : 0.22 }" aria-hidden="true"><use href="#baseball"/></svg>
+                </div>
+
+                <h2 class="font-bold mb-[2.5dvh] text-center text-[clamp(14px,4.4vw,18px)] tracking-tight leading-snug">
+                    <span class="font-head text-gold mr-1">Q{{ currentQuestionIndex + 1 }}.</span>{{ currentQuestion.text }}
+                </h2>
+
+                <div class="flex-1 min-h-0 flex flex-col gap-3">
+                    <div v-for="(option, idx) in currentQuestion.options" :key="idx"
+                         @click="answerQuestion(option.type)"
+                         class="q-card flex-1 min-h-0 flex flex-col rounded-lg overflow-hidden cursor-pointer">
+                        <div v-if="option.imgText" class="w-full flex-1 min-h-0 flex items-center justify-center bg-[var(--cream)]">
+                            <span class="font-head font-bold text-4xl tracking-[0.2em]" style="color: var(--red)">{{ option.imgText }}</span>
+                        </div>
+                        <div v-else-if="option.img" class="w-full flex-1 min-h-0 flex items-center justify-center bg-white overflow-hidden">
+                            <img :src="option.img" class="w-full h-full object-contain scale-[1.35]" alt="">
+                        </div>
+                        <div class="px-3 py-2 flex items-center justify-center text-center min-h-[3rem] shrink-0">
+                            <div class="font-bold text-sm sm:text-base tracking-wide leading-snug">
+                                <span class="font-head text-gold mr-2 text-lg">{{ idx === 0 ? 'A' : 'B' }}</span>{{ option.text }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.5 集計中 -->
+            <div v-else-if="step === 'pouring'" key="pouring" class="w-full max-w-md mx-auto my-auto flex flex-col items-center justify-center text-center min-h-[60vh]">
+                <svg viewBox="0 0 24 24" class="spin-ball w-16 h-16 mb-8" aria-hidden="true"><use href="#baseball"/></svg>
+                <div class="font-head text-2xl tracking-[0.25em] mb-2">CHECKING THE STATS</div>
+                <p class="text-sm text-gold animate-pulse">あなたのデータを分析中...</p>
+            </div>
+
+            <!-- 3. タイプ発表 -->
+            <div v-else-if="step === 'result' && finalResult" key="result" class="w-full max-w-md mx-auto my-auto flex flex-col items-center text-center">
+                <div class="panel w-full rounded-2xl px-5 pt-7 pb-6 flex flex-col items-center">
+                    <div class="font-head text-xs tracking-[0.45em] text-muted mb-4 rise">YOUR TYPE IS</div>
+
+                    <div class="emblem flex flex-col items-center justify-center mb-5">
+                        <div class="text-gold text-[9px] tracking-[0.3em]">★ ★ ★</div>
+                        <div class="font-head text-4xl font-bold leading-none my-1">{{ finalResult.no }}</div>
+                        <div class="font-head text-[9px] tracking-[0.25em] text-muted">{{ finalResult.motif }}</div>
+                    </div>
+
+                    <h2 class="font-head text-4xl sm:text-5xl font-bold leading-none tracking-wider rise" style="animation-delay:.3s">{{ finalResult.enTitle }}</h2>
+                    <div class="text-gold font-bold tracking-[0.2em] mt-2 mb-4 rise" style="animation-delay:.4s">{{ finalResult.jaTitle }} タイプ</div>
+                    <p class="font-serif-it text-cream text-base mb-1 rise" style="animation-delay:.5s">“{{ finalResult.catch }}”</p>
+                    <p class="text-sm text-muted mb-5 rise" style="animation-delay:.55s">{{ finalResult.description }}</p>
+
+                    <div class="w-full flex items-center gap-3 rise" style="animation-delay:.7s">
+                        <div class="w-[42%] aspect-square relative">
+                            <canvas id="radarChart" class="absolute inset-0 w-full h-full"></canvas>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="font-head text-xs text-gold tracking-[0.3em] mb-1">SCOUTING REPORT</div>
+                            <p class="text-[12px] leading-relaxed text-cream/90">{{ finalResult.features }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="startReveal" class="btn-primary w-full mt-6 py-4 rounded-md font-bold tracking-widest rise" style="animation-delay:1s">
+                    打席に立って、おすすめを見る ▶
+                </button>
+            </div>
+
+            <!-- 4. わくわく演出：打席（タイプに応じて HR / 3塁打 / 2塁打 / シングルヒット） -->
+            <div v-else-if="step === 'reveal'" key="reveal" class="stage fixed inset-0 z-40 overflow-hidden flex flex-col items-center justify-center cursor-pointer" @click="finishReveal">
+                <div class="flash" :class="{ on: bat.flash }"></div>
+
+                <div class="relative z-10 w-full max-w-md flex flex-col items-center text-center px-4">
+                    <div class="font-head text-gold text-xs tracking-[0.5em] mb-1">NOW BATTING</div>
+                    <div class="h-9 flex items-center justify-center">
+                        <div :key="bat.caption" class="count-pop font-black text-xl tracking-wider">{{ bat.caption }}</div>
+                    </div>
+
+                    <!-- 球場（上から見た図） -->
+                    <div class="relative w-full max-w-[360px] aspect-square">
+                        <svg viewBox="0 0 360 360" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                            <defs>
+                                <pattern id="crowd" width="8" height="8" patternUnits="userSpaceOnUse">
+                                    <circle cx="2" cy="2" r="1.2" fill="#24324b"/>
+                                    <circle cx="6" cy="6" r="1.2" fill="#34445f"/>
+                                </pattern>
+                                <radialGradient id="lights" cx="50%" cy="85%" r="75%">
+                                    <stop offset="0" stop-color="#fff4e0" stop-opacity=".18"/>
+                                    <stop offset="1" stop-color="#fff4e0" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                            <!-- スタンド -->
+                            <rect width="360" height="360" fill="#0b1322"/>
+                            <rect width="360" height="360" fill="url(#crowd)"/>
+                            <!-- 外野の芝とフェンス -->
+                            <path d="M180 320 L17.4 157.4 A230 230 0 0 1 342.6 157.4 Z" fill="#1d5634"/>
+                            <path d="M180 320 L17.4 157.4 A230 230 0 0 1 342.6 157.4 Z" fill="none" stroke="#f2e8d5" stroke-width="2.5" stroke-linejoin="round"/>
+                            <path d="M21.6 161.6 A224 224 0 0 1 338.4 161.6" fill="none" stroke="#6e4f33" stroke-width="9"/>
+                            <path d="M50 230 A185 185 0 0 1 310 230 M80 260 A140 140 0 0 1 280 260" fill="none" stroke="#235f3b" stroke-width="16"/>
+                            <!-- 内野 -->
+                            <path d="M180 332 L264 250 L180 166 L96 250 Z" fill="#9a6a42"/>
+                            <path d="M180 306 L236 250 L180 194 L124 250 Z" fill="#256a40"/>
+                            <circle cx="180" cy="256" r="9" fill="#9a6a42"/>
+                            <!-- ファウルライン -->
+                            <path d="M180 320 L17.4 157.4 M180 320 L342.6 157.4" stroke="#f2e8d5" stroke-width="1.2" opacity=".8"/>
+                            <!-- ベース -->
+                            <g fill="#f7f1e3">
+                                <rect x="245" y="245" width="10" height="10" transform="rotate(45 250 250)"/>
+                                <rect x="175" y="175" width="10" height="10" transform="rotate(45 180 180)"/>
+                                <rect x="105" y="245" width="10" height="10" transform="rotate(45 110 250)"/>
+                                <path d="M175 316 H185 V321 L180 325 L175 321 Z"/>
+                            </g>
+                            <!-- ナイター照明 -->
+                            <rect width="360" height="360" fill="url(#lights)"/>
+
+                            <!-- バッター -->
+                            <circle cx="166" cy="322" r="6" fill="#f2e8d5"/>
+                            <line class="bat" :class="{ swung: bat.swing }" x1="166" y1="322" x2="166" y2="300" stroke="#d4a85a" stroke-width="3.5" stroke-linecap="round"/>
+
+                            <!-- 打球（影＋ボール） -->
+                            <g v-if="bat.ball.show">
+                                <ellipse :cx="bat.ball.x" :cy="bat.ball.y" rx="3.5" ry="2" fill="#000" opacity=".45"/>
+                                <circle :cx="bat.ball.x" :cy="bat.ball.y - bat.ball.h * 0.5" :r="3 + bat.ball.h * 0.04" fill="#fff" stroke="#b8423a" stroke-width=".8"/>
+                            </g>
+
+                            <!-- ランナー -->
+                            <g v-if="bat.runner.show">
+                                <circle :cx="bat.runner.x" :cy="bat.runner.y" r="10" fill="#b8423a" opacity=".3"/>
+                                <circle :cx="bat.runner.x" :cy="bat.runner.y" r="6" fill="#b8423a" stroke="#f2e8d5" stroke-width="2"/>
+                            </g>
+                        </svg>
+
+                        <!-- ホームランの花火 -->
+                        <template v-if="bat.fireworks">
+                            <div v-for="(fw, k) in fireworkSpots" :key="k" class="absolute" :style="{ left: fw.x + '%', top: fw.y + '%' }">
+                                <span v-for="n in 12" :key="n" class="burst-star"
+                                      :style="{ '--a': (n * 30) + 'deg', animationDelay: (fw.d + (n % 3) * 0.05) + 's', color: fw.c }">★</span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- 結果コール -->
+                    <div class="h-24 flex flex-col items-center justify-center mt-2">
+                        <template v-if="bat.call">
+                            <div class="count-pop font-head text-5xl font-bold tracking-wider text-gold" style="text-shadow: 0 0 18px rgba(212,168,90,0.7)">{{ bat.call }}</div>
+                            <div class="rise text-xs text-cream mt-2 tracking-widest" style="animation-delay:.4s">今夜のスターティングラインナップを発表！</div>
+                        </template>
+                    </div>
+
+                    <div class="text-[10px] text-muted tracking-[0.3em]">TAP TO SKIP</div>
+                </div>
+            </div>
+
+            <!-- 5. おすすめフード3品 -->
+            <div v-else-if="step === 'menu' && finalResult" key="menu" class="w-full max-w-md mx-auto flex flex-col items-stretch mt-2 pb-4">
+                <div class="text-center mb-5">
+                    <div class="font-head text-gold text-xs tracking-[0.45em] mb-1">STARTING LINEUP</div>
+                    <h2 class="font-head text-2xl font-bold tracking-wider">{{ finalResult.enTitle }}</h2>
+                    <div class="text-xs text-muted mt-1">{{ finalResult.jaTitle }}タイプのあなたへ、今夜の3品</div>
+                </div>
+
+                <div class="space-y-4">
+                    <div v-for="(food, i) in finalResult.foods" :key="food.name"
+                         class="lineup-card rounded-md px-5 pt-4 pb-5 flex flex-col items-center text-center"
+                         :style="{ animationDelay: (0.25 + i * 0.45) + 's' }">
+                        <div class="order-badge w-11 h-11 rounded-full flex flex-col items-center justify-center leading-none mb-2">
+                            <span class="text-lg font-bold">{{ i + 1 }}</span>
+                            <span class="text-[8px] tracking-widest">{{ ['ST','ND','RD'][i] }}</span>
+                        </div>
+                        <img v-if="food.img" :src="food.img" class="w-full h-36 object-cover rounded mb-3" alt="">
+                        <div class="font-head text-[10px] tracking-[0.25em]" style="color: var(--red)">{{ food.en }}</div>
+                        <div class="text-lg font-black leading-snug mb-2">{{ food.name }}</div>
+                        <div class="text-[10px] font-bold tracking-widest mb-1" style="color: var(--red)">★ こだわり ★</div>
+                        <p class="text-[12.5px] leading-relaxed text-[#2a3448]">{{ food.kodawari }}</p>
+                    </div>
+                </div>
+
+                <div class="rise text-center mt-6" style="animation-delay:1.8s">
+                    <div class="rule mb-3">★</div>
+                    <p class="text-xs text-muted mb-5">気になる一皿は、この画面をスタッフにお見せください。</p>
+                    <div class="flex gap-3">
+                        <button @click="step = 'result'" class="btn-ghost flex-1 py-3 rounded-md text-sm font-bold tracking-wider">タイプを見る</button>
+                        <button @click="resetQuiz" class="btn-primary flex-1 py-3 rounded-md font-head tracking-[0.25em]">ONE MORE</button>
+                    </div>
+                </div>
+            </div>
+
+        </transition>
+
+        <!-- メニューリクエスト（アンケート）：トップ画面でふわっと表示、1人1回（12時間でリセット） -->
+        <transition name="popup">
+            <div v-if="request.show" class="req-overlay fixed inset-0 z-[60] flex items-start sm:items-center justify-center px-4 pt-[14dvh] sm:pt-0">
+                <div class="req-card panel w-full max-w-sm rounded-xl px-5 pt-5 pb-5 text-center">
+                    <template v-if="!request.sent">
+                        <div class="font-head text-gold text-[10px] tracking-[0.45em] mb-1">NEXT SEASON DRAFT</div>
+                        <h3 class="text-lg font-black tracking-wider">あったら嬉しいメニューは？</h3>
+                        <p class="text-[11px] text-muted mt-1 mb-4">次回、メニューに登場するかも…？</p>
+                        <input v-model="request.text" maxlength="40" class="req-input w-full rounded-md px-3 py-2.5"
+                               placeholder="例：ハンバーガー、クラフトコーラ"
+                               @keyup.enter="sendRequest">
+                        <button @click="sendRequest" :disabled="!request.text.trim()"
+                                class="btn-primary w-full mt-3 py-3 rounded-md font-bold tracking-widest disabled:opacity-40">
+                            リクエストを送る ▶
+                        </button>
+                        <button @click="skipRequest" class="text-muted text-[11px] mt-3 tracking-widest underline underline-offset-4">スキップ</button>
+                    </template>
+                    <div v-else class="py-3">
+                        <svg viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-2" aria-hidden="true"><use href="#baseball"/></svg>
+                        <div class="font-head text-gold text-xl tracking-[0.2em]">THANK YOU!</div>
+                        <p class="text-xs text-cream mt-1">リクエスト受付完了。次回の登板をお楽しみに！</p>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+        const GAS_URL = ''; // スプレッドシートへの送信は外しました（空なので何も送りません）
+
+        const { createApp, ref, reactive, computed, onMounted, watch } = Vue;
+
+        createApp({
+            setup() {
+                const step = ref('intro');
+                const currentQuestionIndex = ref(0);
+                const answersHistory = ref([]);
+                const isSubmitted = ref(false);
+                let chartInstance = null;
+
+                onMounted(() => {
+                    setTimeout(() => {
+                        if (step.value === 'intro') step.value = 'start';
+                    }, 3200);
+                });
+
+                const skipIntro = () => {
+                    if (step.value === 'intro') step.value = 'start';
+                };
+
+                const questions = [
+                    { text: 'あなたの性別をお聞かせください', options: [{ text: '男性', type: 'A', img: '1-1seibetuotoko.webp' }, { text: '女性', type: 'B', img: '1-2seibetuonna.webp' }] },
+                    { text: 'あなたの年齢をお聞かせください', options: [{ text: '35歳未満', imgText: 'UNDER 35', type: 'A' }, { text: '35歳以上', imgText: 'OVER 35', type: 'B' }] },
+                    { text: '今のお腹の空き具合は？', options: [{ text: 'ガッツリ満たされたい', type: 'A', img: '3-1.webp' }, { text: '少しずつつまみたい', type: 'B', img: '3-2.webp' }] },
+                    { text: '今の食事のペースは？', options: [{ text: 'テンポよくサクッと楽しみたい', type: 'A', img: '4-1.webp' }, { text: 'ゆっくりじっくり楽しみたい', type: 'B', img: '4-2.webp' }] },
+                    { text: 'どのように美味しさを感じたい？', options: [{ text: '口の中でパッと広がる美味しさ', type: 'A', img: '5-1.webp' }, { text: '味わいながらじんわり感じる旨み', type: 'B', img: '5-2.webp' }] },
+                    { text: '今惹かれる味は？', options: [{ text: 'しっかりした味わい', type: 'A', img: '6-1.webp' }, { text: '繊細で優しい味わい', type: 'B', img: '6-2.webp' }] },
+                    { text: '一緒に合わせたい飲み物のイメージは？', options: [{ text: '冷えたビールや炭酸で爽快に', type: 'A', img: '7-1craft.webp' }, { text: 'ワインや日本酒などを香りとともに', type: 'B', img: '7-2wine.webp' }] },
+                    { text: '今の気分は？', options: [{ text: '明るく気分を発散したい', type: 'A', img: '8-1okiru.webp' }, { text: '静かに心身をリセットしたい', type: 'B', img: '8-2yasumu.webp' }] }
+                ];
+
+                // ※ foods のメニュー名・こだわり文はお店の実メニューに合わせて書き換えてください。
+                //    img に画像ファイル名を入れると、カードに写真が表示されます。
+                const resultTypes = {
+                    type1: {
+                        id: 'type1', no: 'HR', motif: 'OVER THE FENCE',
+                        enTitle: 'HOME RUN', jaTitle: 'ホームラン',
+                        hit: { bases: 4, land: [236, 34], call: 'HOME RUN!' },
+                        catch: 'Swing big, eat big.',
+                        description: '肉の旨みで豪快に満たされたい、フルスイングの食欲派',
+                        features: 'ガツンとくる肉の旨みと、香ばしい焼き目。キンキンのビールと合わせて、一皿でスタンドまで運ぶような満足感を求めるタイプです。',
+                        foods: [
+                            { name: '牛タンのねぎ塩炒め', en: 'BEEF TONGUE WITH GREEN ONION & SALT', img: '', kodawari: '歯ごたえのある牛タンを、たっぷりのねぎと塩ダレで一気に炒め上げ。レモンをキュッと絞れば、ビールが止まらない一皿です。' },
+                            { name: '鶏ハラミの炭焼き風', en: 'CHAR-GRILLED CHICKEN SKIRT', img: '', kodawari: '一羽から少ししか取れない希少部位・鶏ハラミを、香ばしい炭焼き風に。噛むほどにあふれるジューシーな旨みが自慢です。' },
+                            { name: 'タルタルチキン南蛮', en: 'CHICKEN NANBAN WITH TARTAR', img: '', kodawari: '甘酢をくぐらせたジューシーなチキンに、具だくさんの自家製タルタルをたっぷりと。ボリューム満点の満塁ホームラン級。' }
+                        ]
+                    },
+                    type2: {
+                        id: 'type2', no: '3B', motif: 'THREE BASES',
+                        enTitle: 'TRIPLE', jaTitle: '3塁打',
+                        hit: { bases: 3, land: [318, 176], call: 'TRIPLE!' },
+                        catch: 'Round the bases, nice and slow.',
+                        description: '海の幸の旨みをゆっくり味わう、じっくり塁を回る余裕派',
+                        features: 'じんわり広がる魚介の旨みや香ばしさを、香りのいいお酒とともにゆっくり。ダイヤモンドを大きく回る3塁打のように、時間をかけて味わいを深めていくタイプです。',
+                        foods: [
+                            { name: 'ホタテの北海ファイヤー', en: 'HOKKAI FIRE SCALLOPS', img: '', kodawari: 'ぷりっと肉厚なホタテを、熱々で豪快に仕上げた名物メニュー。見た目もインパクト大で、テーブルが一気に盛り上がります。' },
+                            { name: '炙りしめさば', en: 'SEARED CURED MACKEREL', img: '', kodawari: 'ほどよく締めたさばの皮目をさっと炙って、香ばしさと脂の甘みを引き出しました。日本酒とゆっくり合わせたい一品。' },
+                            { name: 'エビマヨ', en: 'SHRIMP MAYO', img: '', kodawari: 'ぷりぷりのエビをカリッと揚げて、まろやかで甘めのマヨソースで包みました。子どもから大人まで愛される定番の味。' }
+                        ]
+                    },
+                    type3: {
+                        id: 'type3', no: '2B', motif: 'TWO BASES',
+                        enTitle: 'DOUBLE', jaTitle: '2塁打',
+                        hit: { bases: 2, land: [92, 140], call: 'DOUBLE!' },
+                        catch: 'Grab a beer. Go, go, go!',
+                        description: 'テンポよく、ビール片手に盛り上がりたいスピード派',
+                        features: '揚げたてのカリッ、サクッとした香ばしさ。冷えたビールやハイボールと交互に、外野を抜けていく2塁打のように、勢いよくテンポよく楽しむタイプです。',
+                        foods: [
+                            { name: 'ポテトフライアメリカ盛り', en: 'AMERICA-SIZE FRENCH FRIES', img: '', kodawari: 'アメリカンサイズに豪快に盛った揚げたてポテト。外はカリッ、中はホクホク。みんなでつまめば会話も弾みます。' },
+                            { name: 'さきいかの天ぷら', en: 'SQUID JERKY TEMPURA', img: '', kodawari: 'おつまみの定番・さきいかを、サクッと軽い衣で天ぷらに。噛むほどにいかの旨みが広がる、クセになる一品です。' },
+                            { name: 'ごぼうの唐揚げ', en: 'CRISPY BURDOCK', img: '', kodawari: 'ごぼうの香りと食感を活かして、カリッと香ばしく揚げました。ついつい手が伸びる、ビールの最高の相棒です。' }
+                        ]
+                    },
+                    type4: {
+                        id: 'type4', no: '1B', motif: 'ONE BASE',
+                        enTitle: 'HIT', jaTitle: 'シングルヒット',
+                        hit: { bases: 1, land: [228, 172], call: 'SINGLE HIT!' },
+                        catch: 'Clean hit, fresh start.',
+                        description: '素材の鮮やかさで心も軽やかに。クリーンヒットな爽やかフレッシュ派',
+                        features: 'みずみずしい野菜や、さっぱりした前菜の彩り。パッと広がる爽快感で、芯でとらえたクリーンヒットのように、軽やかでキレのある一皿を好むタイプです。',
+                        foods: [
+                            { name: '山芋キムチ', en: 'YAM KIMCHI', img: '', kodawari: 'シャキシャキの山芋に、ピリ辛のキムチを合わせて。さっぱりと食べやすく、最初の一品にぴったりです。' },
+                            { name: '冷やしトマト', en: 'CHILLED TOMATO', img: '', kodawari: 'よく冷やしたトマトを、シンプルにそのまま。みずみずしい甘みと酸味で、口の中をリセットしてくれます。' },
+                            { name: '炙りトロサーモンのカルパッチョ', en: 'SEARED SALMON CARPACCIO', img: '', kodawari: '脂ののったトロサーモンを軽く炙り、香ばしさととろける食感をプラス。爽やかなソースで仕上げた、彩り豊かな一皿。' }
+                        ]
+                    }
+                };
+
+                const currentQuestion = computed(() => questions[currentQuestionIndex.value]);
+
+                const finalResult = computed(() => {
+                    if (answersHistory.value.length < 8) return null;
+                    const scores = { type1: 0, type2: 0, type3: 0, type4: 0 };
+                    const [, , q3, q4, q5, q6, q7, q8] = answersHistory.value;
+
+                    // スコアリングは元の診断と同じロジック（type1:濃厚 / type2:優しい / type3:揚げ物 / type4:フレッシュ）
+                    if (q3 === 'A') { scores.type1 += 2; scores.type3 += 1; } else { scores.type2 += 1; scores.type4 += 2; }
+                    if (q4 === 'A') { scores.type3 += 2; scores.type4 += 1; } else { scores.type1 += 1; scores.type2 += 2; }
+                    if (q5 === 'A') { scores.type3 += 1; scores.type4 += 2; } else { scores.type1 += 2; scores.type2 += 1; }
+                    if (q6 === 'A') { scores.type1 += 2; scores.type3 += 1; } else { scores.type2 += 2; scores.type4 += 1; }
+                    if (q7 === 'A') { scores.type3 += 2; scores.type4 += 1; } else { scores.type1 += 1; scores.type2 += 2; }
+                    if (q8 === 'A') { scores.type1 += 1; scores.type3 += 2; } else { scores.type2 += 1; scores.type4 += 2; }
+
+                    let maxScore = -1, resultTypeId = 'type1';
+                    for (const [typeId, score] of Object.entries(scores)) {
+                        if (score > maxScore) { maxScore = score; resultTypeId = typeId; }
+                    }
+                    return resultTypes[resultTypeId];
+                });
+
+                const getChartData = () => {
+                    if (answersHistory.value.length < 8) return [0, 0, 0];
+                    const [, , q3, q4, q5, q6, q7, q8] = answersHistory.value;
+
+                    let volume = 1.5, tempo = 1.5, depth = 1.5;
+                    if (q3 === 'A') volume += 1.75;
+                    if (q6 === 'A') volume += 1.75;
+                    if (q4 === 'A') tempo += 1.2;
+                    if (q5 === 'A') tempo += 1.0;
+                    if (q7 === 'A') tempo += 1.3;
+                    if (q4 === 'B') depth += 1.0;
+                    if (q5 === 'B') depth += 1.2;
+                    if (q8 === 'B') depth += 1.3;
+
+                    const clamp = (val) => Math.min(Math.max(val, 1.5), 5);
+                    return [clamp(volume), clamp(tempo), clamp(depth)];
+                };
+
+                const renderChart = () => {
+                    const ctxElement = document.getElementById('radarChart');
+                    if (!ctxElement) { if (step.value === 'result') setTimeout(renderChart, 100); return; }
+                    if (chartInstance) chartInstance.destroy();
+
+                    const grid = 'rgba(242, 232, 213, 0.15)';
+                    chartInstance = new Chart(ctxElement.getContext('2d'), {
+                        type: 'radar',
+                        data: {
+                            labels: ['VOLUME', 'TEMPO', 'DEPTH'],
+                            datasets: [{
+                                data: getChartData(),
+                                backgroundColor: 'rgba(212, 168, 90, 0.25)',
+                                borderColor: '#d4a85a',
+                                borderWidth: 1.5,
+                                pointBackgroundColor: '#f2e8d5',
+                                pointRadius: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            layout: { padding: 4 },
+                            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                            scales: {
+                                r: {
+                                    min: 0, max: 5,
+                                    angleLines: { color: grid },
+                                    grid: { color: grid },
+                                    pointLabels: { color: '#f2e8d5', font: { size: 9, family: 'Oswald', weight: '600' }, padding: 2 },
+                                    ticks: { display: false, stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
+                };
+
+                // トップ・質問ページは画面を固定（スクロールさせない）
+                watch(step, (s) => {
+                    document.documentElement.classList.toggle('lock', ['intro', 'start', 'quiz'].includes(s));
+                }, { immediate: true });
+
+                watch(step, (newStep) => {
+                    if (newStep === 'result') setTimeout(renderChart, 700);
+                    window.scrollTo({ top: 0 });
+                });
+
+                // ===== わくわく演出：打席 =====
+                // 投球 → スイング → 打球 → 走塁 → 結果コール → おすすめ発表
+                const BASE_PATH = [[180, 320], [250, 250], [180, 180], [110, 250], [180, 320]]; // 本塁→1塁→2塁→3塁→本塁
+                const bat = reactive({
+                    caption: '', call: '', swing: false, flash: false, fireworks: false,
+                    ball: { x: 180, y: 256, h: 0, show: false },
+                    runner: { x: 180, y: 320, show: false }
+                });
+                const fireworkSpots = [
+                    { x: 66, y: 10, d: 0, c: '#d4a85a' },
+                    { x: 30, y: 16, d: 0.35, c: '#f2e8d5' },
+                    { x: 80, y: 24, d: 0.7, c: '#b8423a' }
+                ];
+                let batRun = 0;
+                const wait = (ms) => new Promise(r => setTimeout(r, ms));
+                const tween = (ms, fn) => new Promise(resolve => {
+                    const t0 = performance.now();
+                    const tick = (now) => {
+                        const p = Math.min(1, (now - t0) / ms);
+                        fn(p);
+                        p < 1 ? requestAnimationFrame(tick) : resolve();
+                    };
+                    requestAnimationFrame(tick);
+                });
+
+                const startReveal = async () => {
+                    const run = ++batRun;
+                    const alive = () => run === batRun && step.value === 'reveal';
+                    const hit = finalResult.value.hit;
+
+                    Object.assign(bat, { caption: 'あなたの打席です', call: '', swing: false, flash: false, fireworks: false });
+                    bat.ball = { x: 180, y: 256, h: 0, show: false };
+                    bat.runner = { x: 180, y: 320, show: false };
+                    step.value = 'reveal';
+
+                    // 投球
+                    await wait(1300); if (!alive()) return;
+                    bat.caption = 'PITCH...';
+                    bat.ball.show = true;
+                    await tween(550, p => { bat.ball.y = 256 + 60 * p; bat.ball.h = 8 * Math.sin(Math.PI * p); });
+                    if (!alive()) return;
+
+                    // スイング
+                    bat.swing = true; bat.flash = true; bat.caption = 'カキーン！';
+                    setTimeout(() => { bat.flash = false; }, 120);
+
+                    // 打球（ホームランほど高く・長く飛ぶ）
+                    const [lx, ly] = hit.land;
+                    const isHR = hit.bases === 4;
+                    const peak = isHR ? 110 : 30 + hit.bases * 14;
+                    await tween(isHR ? 1800 : 1200, p => {
+                        const e = 1 - Math.pow(1 - p, 2);
+                        bat.ball.x = 180 + (lx - 180) * e;
+                        bat.ball.y = 316 + (ly - 316) * e;
+                        bat.ball.h = peak * Math.sin(Math.PI * p);
+                    });
+                    if (!alive()) return;
+
+                    // 走塁
+                    if (isHR) { bat.ball.show = false; bat.fireworks = true; bat.caption = '入ったー！！'; }
+                    else { bat.caption = 'GO! GO! GO!'; }
+                    bat.runner.show = true;
+                    for (let i = 0; i < hit.bases; i++) {
+                        const [ax, ay] = BASE_PATH[i], [bx, by] = BASE_PATH[i + 1];
+                        await tween(420, p => { bat.runner.x = ax + (bx - ax) * p; bat.runner.y = ay + (by - ay) * p; });
+                        if (!alive()) return;
+                    }
+
+                    // 結果コール → おすすめ発表へ
+                    bat.caption = '';
+                    bat.call = hit.call;
+                    await wait(2200); if (!alive()) return;
+                    step.value = 'menu';
+                };
+
+                const finishReveal = () => {
+                    // 演出中のタップはスキップ扱い
+                    batRun++;
+                    step.value = 'menu';
+                };
+
+                const startQuiz = () => {
+                    step.value = 'quiz';
+                    answersHistory.value = [];
+                    currentQuestionIndex.value = 0;
+                    isSubmitted.value = false;
+                };
+
+                const goBack = () => {
+                    if (currentQuestionIndex.value > 0) {
+                        answersHistory.value.pop();
+                        currentQuestionIndex.value--;
+                    } else {
+                        step.value = 'start';
+                    }
+                };
+
+                // BURGER STACK ボタンのタップを記録（ページ移動しても届くよう sendBeacon を使用）
+                const logGameClick = () => {
+                    if (!GAS_URL) return;
+                    try {
+                        const params = new URLSearchParams({
+                            q1: '-', q2: '-', gender: '-', age: '-',
+                            type: 'burger_stack', result: 'burger_stack',
+                            category: 'BURGER STACK（ボタン押下）',
+                            event: 'game_click', ua: navigator.userAgent
+                        });
+                        const body = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+                        if (!(navigator.sendBeacon && navigator.sendBeacon(GAS_URL, body))) {
+                            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
+                        }
+                    } catch (error) {}
+                };
+
+                const sendToGoogleSheet = (q1, q2, type, category) => {
+                    if (!GAS_URL) return;
+                    try {
+                        const params = new URLSearchParams();
+                        params.append('q1', q1); params.append('q2', q2);
+                        params.append('type', type); params.append('category', category);
+                        params.append('gender', q1); params.append('age', q2);
+                        params.append('result', type); params.append('ua', navigator.userAgent);
+                        fetch(GAS_URL, {
+                            method: 'POST', mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: params.toString()
+                        });
+                    } catch (error) {}
+                };
+
+                const answerQuestion = (type) => {
+                    if (step.value !== 'quiz') return;
+                    answersHistory.value.push(type);
+
+                    if (currentQuestionIndex.value < questions.length - 1) {
+                        currentQuestionIndex.value++;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                    }
+
+                    step.value = 'pouring';
+                    setTimeout(() => {
+                        if (step.value !== 'pouring') return;
+                        step.value = 'result';
+                        if (!isSubmitted.value) {
+                            const q1Ans = answersHistory.value[0] === 'A' ? '男性' : '女性';
+                            const q2Ans = answersHistory.value[1] === 'A' ? '35歳未満' : '35歳以上';
+                            const typeId = finalResult.value ? finalResult.value.id : 'unknown';
+                            sendToGoogleSheet(q1Ans, q2Ans, typeId, '大衆酒場アメリカ');
+                            isSubmitted.value = true;
+                        }
+                    }, 2600);
+                };
+
+                // メニューリクエスト（アンケート）
+                // トップ画面が出たあとにふわっと表示。答える（またはスキップ）と12時間は出ない。
+                const REQUEST_KEY = 'america_menu_request_at';
+                const REQUEST_INTERVAL = 12 * 60 * 60 * 1000;
+                const request = reactive({ show: false, text: '', sent: false });
+                const requestDue = () => {
+                    try {
+                        const last = Number(localStorage.getItem(REQUEST_KEY) || 0);
+                        return !last || Date.now() - last >= REQUEST_INTERVAL;
+                    } catch (e) { return true; }
+                };
+                const markRequestDone = () => {
+                    try { localStorage.setItem(REQUEST_KEY, String(Date.now())); } catch (e) {}
+                };
+                let requestChecked = false;
+                watch(step, (s) => {
+                    if (s !== 'start' || requestChecked) return;
+                    requestChecked = true;
+                    if (requestDue()) setTimeout(() => { if (step.value === 'start') request.show = true; }, 1200);
+                });
+
+                const sendRequest = () => {
+                    const text = request.text.trim();
+                    if (!text || request.sent) return;
+                    request.sent = true;
+                    markRequestDone();
+                    setTimeout(() => { request.show = false; }, 300);
+                    if (!GAS_URL) return;
+                    // シートの列構成に関わらずコメントが残るよう、性別・年齢・タイプ・カテゴリの各欄に入れて送る
+                    try {
+                        const params = new URLSearchParams({
+                            q1: 'メニューリクエスト', gender: 'メニューリクエスト',
+                            q2: '-', age: '-',
+                            type: text, result: text,
+                            category: `メニューリクエスト：${text}`,
+                            event: 'menu_request', comment: text, ua: navigator.userAgent
+                        });
+                        const body = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+                        if (!(navigator.sendBeacon && navigator.sendBeacon(GAS_URL, body))) {
+                            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
+                        }
+                    } catch (error) {}
+                };
+                const skipRequest = () => {
+                    markRequestDone();
+                    request.show = false;
+                };
+
+                const resetQuiz = () => {
+                    batRun++;
+                    step.value = 'start';
+                    currentQuestionIndex.value = 0;
+                    answersHistory.value = [];
+                    isSubmitted.value = false;
+                    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+                };
+
+                return {
+                    step, currentQuestionIndex, currentQuestion, answersHistory, finalResult, bat, fireworkSpots,
+                    skipIntro, startQuiz, goBack, logGameClick, answerQuestion, startReveal, finishReveal, resetQuiz,
+                    request, sendRequest, skipRequest
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
