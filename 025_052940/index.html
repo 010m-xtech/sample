@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -2019,7 +2018,7 @@
     .mf-op-say { position: absolute; right: 12%; top: 40%; background: #fff; border-radius: 16px; padding: 7px 12px; font-size: 14px; font-weight: 900; color: #e2603c; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2); }
     .mf-op-beer { margin-top: 18px; width: 100%; max-width: 360px; padding: 10px; border-radius: 14px; background: #ffcf4a; color: #4a2a05; font-size: 12.5px; font-weight: 900; }
     .mf-op-map { width: 100%; max-width: 380px; flex: 1; min-height: 0; margin: 12px 0 4px; border-radius: 16px; }
-    .mf-op-mystery { position: relative; width: min(46%, 190px); aspect-ratio: 1; margin-top: 22px; border-radius: 9999px; background: url(city-boteko.webp) center / cover; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 50px rgba(255, 207, 74, 0.4); }
+    .mf-op-mystery { position: relative; width: min(46%, 190px); aspect-ratio: 1; margin-top: 22px; border-radius: 9999px; background: url(image/city-boteko.webp) center / cover; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 50px rgba(255, 207, 74, 0.4); }
     .mf-op-mystery::before { content: ''; position: absolute; inset: 0; border-radius: 9999px; background: rgba(10, 6, 20, 0.5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
     .mf-op-mystery span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 84px; font-weight: 900; color: #ffcf4a; text-shadow: 0 0 22px rgba(255, 207, 74, 0.8); }
     .mf-op-s.on .mf-op-mystery span { animation: mfOpQ 1.6s ease-in-out infinite alternate; }
@@ -2742,7 +2741,7 @@
         <text x="58" y="176" class="mf-map-sea" transform="rotate(62 58 176)">矢作川</text>
         <text x="188" y="128" class="mf-map-sea">乙川</text>
         <text x="240" y="306" class="mf-map-sea">三河湾</text>
-        <g aria-hidden="true" pointer-events="none" class="bt-map-food"><image class="bt-food is-1" href="okonomi.webp" x="126" y="140" width="26" height="19"/><image class="bt-food is-2" href="yakisoba.webp" x="40" y="128" width="28" height="17"/><image class="bt-food is-3" href="okonomi.webp" x="58" y="196" width="26" height="19"/><image class="bt-food is-4" href="yakisoba.webp" x="124" y="168" width="28" height="17"/><image class="bt-food bt-map-big is-5" href="okonomi.webp" x="226" y="112" width="70" height="50"/><image class="bt-food bt-map-big is-6" href="yakisoba.webp" x="214" y="244" width="78" height="48"/><image class="bt-food bt-map-big is-7" href="beer-mug.webp" x="244" y="150" width="40" height="57"/></g>
+        <g aria-hidden="true" pointer-events="none" class="bt-map-food"><image class="bt-food is-1" href="image/okonomi.webp" x="126" y="140" width="26" height="19"/><image class="bt-food is-2" href="image/yakisoba.webp" x="40" y="128" width="28" height="17"/><image class="bt-food is-3" href="image/okonomi.webp" x="58" y="196" width="26" height="19"/><image class="bt-food is-4" href="image/yakisoba.webp" x="124" y="168" width="28" height="17"/><image class="bt-food bt-map-big is-5" href="image/okonomi.webp" x="226" y="112" width="70" height="50"/><image class="bt-food bt-map-big is-6" href="image/yakisoba.webp" x="214" y="244" width="78" height="48"/><image class="bt-food bt-map-big is-7" href="image/beer-mug.webp" x="244" y="150" width="40" height="57"/></g>
         <g id="mfInset" aria-hidden="true" pointer-events="none">
           <rect x="3" y="3" width="122" height="62" rx="8" fill="#fffaf0" fill-opacity=".94" stroke="#f47c2c" stroke-width="1.6" stroke-dasharray="4 3"/>
           <text x="10" y="14" font-size="7" font-weight="900" fill="#b8501a">名古屋・春日井エリア</text>
@@ -2756,8 +2755,8 @@
         </g>
         <g id="mfMapRoute"></g>
         <g id="mfMapPins"></g>
-        <g class="mf-map-logo" aria-hidden="true" pointer-events="none"><circle cx="102.6" cy="192.1" r="8.5" fill="#fff"/><image href="logo-round.webp" x="95.1" y="184.6" width="15" height="15"/></g>
-        <image class="bt-map-chara" href="chara.webp" x="86" y="258" width="34" height="31" aria-hidden="true" pointer-events="none"/>
+        <g class="mf-map-logo" aria-hidden="true" pointer-events="none"><circle cx="102.6" cy="192.1" r="8.5" fill="#fff"/><image href="image/logo-round.webp" x="95.1" y="184.6" width="15" height="15"/></g>
+        <image class="bt-map-chara" href="image/chara.webp" x="86" y="258" width="34" height="31" aria-hidden="true" pointer-events="none"/>
       </svg>
       <div id="mfMapTruck" class="mf-truck mf-map-truck"></div>
       <div id="mfMapPill" class="mf-map-pill"></div>
@@ -2849,7 +2848,7 @@
     <!-- 洗濯ロープ：投稿された写真がポラロイドで吊るされる -->
     <div id="mfLine" class="mf-line" aria-label="みんなの旅の写真">
       <div class="mf-line-head">
-        <span class="mf-line-title"><img class="bt-line-chara" src="chara.webp" alt="">みんなの旅の写真 <b id="mfLineCount">0/5</b></span>
+        <span class="mf-line-title"><img class="bt-line-chara" src="image/chara.webp" alt="">みんなの旅の写真 <b id="mfLineCount">0/5</b></span>
         <span class="mf-line-note">写真をタップすると見られます</span>
         <button type="button" onclick="replayStoryIntro()" class="mf-line-help">遊び方</button>
       </div>
@@ -2875,12 +2874,12 @@
 
       <section class="mf-op-s on">
         <div class="mf-op-flag"></div>
-        <img src="logo-banner.webp" alt="お好み焼 ぼてこ幸田" class="mf-op-logo bt-op-banner">
+        <img src="image/logo-banner.webp" alt="お好み焼 ぼてこ幸田" class="mf-op-logo bt-op-banner">
         <p class="mf-op-h">ようこそ、<br><b>ぼてこ幸田号</b>へ。</p>
         <p class="bt-op-lead">写真を撮って<b>乾杯ボタン</b>を押したら<br><b>スゴロクのように</b>トラックが<br>進んでいくよ！<small>（写真はビール以外でもOK！）</small></p>
-        <div class="mf-op-ground bt-op-store"><img src="boteko-morning.webp" alt="ぼてこ幸田店"><span>ぼてこ幸田店で、お待ちしています</span></div>
+        <div class="mf-op-ground bt-op-store"><img src="image/boteko-morning.webp" alt="ぼてこ幸田店"><span>ぼてこ幸田店で、お待ちしています</span></div>
         <div class="mf-truck mf-op-truck"></div>
-        <div class="bt-op-buddy is-big"><span>いらっしゃい！</span><img src="chara.webp" alt=""></div>
+        <div class="bt-op-buddy is-big"><span>いらっしゃい！</span><img src="image/chara.webp" alt=""></div>
         <p class="mf-op-foot">右をタップで次へ ／ 左をタップで前へ</p>
       </section>
 
@@ -2888,10 +2887,10 @@
         <span class="mf-op-num bt-op-shotnum">1</span>
         <p class="mf-op-h">ビールやお好み焼きを<b>撮って</b>、<br><b>ひとこと添えて乾杯！</b></p>
         <p class="mf-op-p">例：「美味しい！」</p>
-        <div class="mf-op-phone"><div><img class="bt-phone-photo" src="kanpai.webp" alt="乾杯の写真"></div><img class="bt-phone-food" src="okonomi.webp" alt=""></div>
+        <div class="mf-op-phone"><div><img class="bt-phone-photo" src="image/kanpai.webp" alt="乾杯の写真"></div><img class="bt-phone-food" src="image/okonomi.webp" alt=""></div>
         <div class="mf-op-say">例：美味しい！</div>
         <div class="mf-op-beer">🍺 ビールの一枚は「生ビール速達便」で特急出発！</div>
-        <div class="bt-op-buddy"><span>撮ってね！</span><img src="chara.webp" alt=""></div>
+        <div class="bt-op-buddy"><span>撮ってね！</span><img src="image/chara.webp" alt=""></div>
         <p class="mf-op-foot">料理やお店の雰囲気など、写真はなんでもOK</p>
       </section>
 
@@ -2901,7 +2900,7 @@
         <svg class="mf-op-map" viewBox="0 0 300 318" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
         <div class="bt-op-route"><span class="is-start">アサヒビール</span><i>›</i><span>マルト水谷</span><i>›</i><span>岡崎城</span><i>›</i><span>幸田の公園</span><i>›</i><span>本光寺</span><i>›</i><span class="is-goal">ぼてこ幸田</span></div>
         <p class="mf-op-p mf-op-small">着くと、名所の<b class="mf-op-em">写真と紹介・豆知識</b>が見られます</p>
-        <div class="bt-op-buddy"><span>みんなで行こう！</span><img src="chara.webp" alt=""></div>
+        <div class="bt-op-buddy"><span>みんなで行こう！</span><img src="image/chara.webp" alt=""></div>
       </section>
 
       <section class="mf-op-s mf-op-dark bt-op-center">
@@ -2910,7 +2909,7 @@
         <div class="mf-op-mystery"><span>？</span></div>
         <p class="mf-op-h mf-op-big">何かが起こる…<b class="mf-op-gold">！？</b></p>
         <p class="mf-op-p">それは、この席のみんなで<br>5枚そろえた人だけのおたのしみ</p>
-        <div class="bt-op-buddy"><span>なにかな〜？</span><img src="chara.webp" alt=""></div>
+        <div class="bt-op-buddy"><span>なにかな〜？</span><img src="image/chara.webp" alt=""></div>
         <p class="mf-op-foot">ドキドキしながら、旅を進めよう</p>
         <button type="button" class="mf-op-go">旅に出る ›</button>
       </section>
@@ -2920,7 +2919,7 @@
     <!-- 前のお客様の旅が途中のとき -->
     <div id="btResume" class="bt-resume hidden" role="dialog" aria-label="旅の確認">
       <div class="bt-resume-box">
-        <img src="chara.webp" alt="" class="bt-resume-chara">
+        <img src="image/chara.webp" alt="" class="bt-resume-chara">
         <p class="bt-resume-h">前のお客様の旅が<br>途中のようです</p>
         <p class="bt-resume-p">新しく、最初から旅を始めますか？<br><small>（同じ席のみなさんで遊んでいる途中なら<span class="nw">「続きから」</span>）</small></p>
         <button type="button" class="bt-resume-new">🚚 新しく旅を始める</button>
@@ -2950,7 +2949,7 @@
     <div id="memoryMeter" class="absolute top-0 inset-x-0 z-30 pointer-events-auto opacity-0 transition-opacity duration-1000" style="padding-top: calc(env(safe-area-inset-top) + 8px);">
       <div id="meterPanel" class="lantern-panel mx-3 px-3 pt-1.5 pb-1.5 rounded-xl">
         <div class="flex items-center justify-between px-1">
-          <span class="text-[10.5px] font-black text-amber-200 tracking-[0.18em] font-serif-luxury flex items-center gap-1.5"><img src="logo-round.webp" alt="ぼてこ" class="mf-logo">思い出の乾杯ジョッキ<span id="seasonTag" class="season-tag"></span></span>
+          <span class="text-[10.5px] font-black text-amber-200 tracking-[0.18em] font-serif-luxury flex items-center gap-1.5"><img src="image/logo-round.webp" alt="ぼてこ" class="mf-logo">思い出の乾杯ジョッキ<span id="seasonTag" class="season-tag"></span></span>
           <span class="flex items-center gap-2">
             <span class="text-[9.5px] font-bold text-white/85"><span id="meterCount" class="text-[13px] font-black text-white">0</span>/5 杯</span>
             <button onclick="replayStoryIntro()" class="px-1.5 py-[1px] rounded-full border border-white/40 text-[9px] font-bold text-white/85 active:scale-95 transition">遊び方</button>
@@ -2978,7 +2977,7 @@
       <div id="uiElements" class="w-full flex flex-col gap-3 pb-3 relative z-30 pointer-events-auto opacity-0 transition-opacity duration-1000">
 
         <!-- お店の看板（ロゴ画像） -->
-        <img src="logo-banner.webp" alt="三河スタイルのお好み焼 ぼてこ" class="mf-banner hidden">
+        <img src="image/logo-banner.webp" alt="三河スタイルのお好み焼 ぼてこ" class="mf-banner hidden">
 
         <div id="mfHintBar" class="self-center px-4 py-1.5 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-[11px] font-bold text-white/90 flex items-center gap-2">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping"></span>
@@ -3391,9 +3390,9 @@
 
     // lead：ひとことの紹介 ／ points：こだわり（3つまで・短く）
     // ※ メニューは仮。お店のメニュー名・説明・写真（menu-◯◯.webp）に差し替える
-    const MF_IMG_OKONOMI = 'menu-okonomiyaki.webp';
-    const MF_IMG_YAKISOBA = 'menu-yakisoba.webp';
-    const MF_IMG_BEER = 'menu-beer.webp';
+    const MF_IMG_OKONOMI = 'image/menu-okonomiyaki.webp';
+    const MF_IMG_YAKISOBA = 'image/menu-yakisoba.webp';
+    const MF_IMG_BEER = 'image/menu-beer.webp';
     const defaultMenuData = [
       {
         id: 'default_0',
@@ -4472,8 +4471,8 @@
     resizeSeasonCanvas();
 
     // ---------- 夜空をかけるビールのトラック（共通） ----------
-    const TRUCK_SRC = 'truck.webp';
-    const TRUCK_SRC_RIGHT = 'truck-right.webp'; // 右向き（荷台の文字は読める向きのまま）
+    const TRUCK_SRC = 'image/truck.webp';
+    const TRUCK_SRC_RIGHT = 'image/truck-right.webp'; // 右向き（荷台の文字は読める向きのまま）
     [TRUCK_SRC, TRUCK_SRC_RIGHT].forEach(u => { const im = new Image(); im.src = u; });
     const TRUCK_RATIO = 178 / 430;
     const MF_BANNER_SRC = document.querySelector('.mf-banner')?.src || '';
@@ -4647,9 +4646,9 @@
     const mfLogoImg = new Image();
     mfLogoImg.src = document.querySelector('.mf-logo')?.src || '';
     const mfCharaImg = new Image();
-    mfCharaImg.src = 'logo-chara.webp';
+    mfCharaImg.src = 'image/logo-chara.webp';
     // お好み焼き・焼きそばのイラスト（花火で咲かせる）
-    const BT_FOOD = ['okonomi.webp', 'yakisoba.webp', 'beer-mug.webp', 'kanpai.webp'].map(src => { const im = new Image(); im.src = src; return im; });
+    const BT_FOOD = ['image/okonomi.webp', 'image/yakisoba.webp', 'image/beer-mug.webp', 'image/kanpai.webp'].map(src => { const im = new Image(); im.src = src; return im; });
     let mfLogoFlip = 0;
     let mainLogoBlooms = [];
     let nextLogoAt = 0;
@@ -5573,11 +5572,11 @@
     // 位置（pos）＝届いた写真の枚数。pos 1〜5 が MF_CITIES[pos - 1]
     // ==============================================
     const MF_CITIES = [
-      { key: 'maruto', day: '1日目　マルト水谷に到着', trivia: ["春日井市を拠点に、飲食店向けのお酒や業務用食品を届けている会社です", "「生ビール」は、熱で殺菌していないビールのこと。だからこそ鮮度がいのち", "ビール工場から出荷された新鮮なビールは、朝いちばんに集荷して、その日のうちにお店へ向かいます"], it: 'Maruto Mizutani', jp: 'マルト水谷', img: 'city-maruto.webp', credit: '', copy: 'ビール工場から出荷された新鮮なビールが、マルト水谷に到着！', desc: 'アサヒビール名古屋工場から出荷された新鮮なビールが、マルト水谷へ。朝いちばんに集荷して、岡崎へ出発します。', menuId: 'default_2', menuName: '生ビール' },
-      { key: 'castle', day: '2日目　朝　岡崎へ', trivia: ["徳川家康は1542年、この岡崎城で生まれました", "いまの天守は、1959年に復元されたもの", "岡崎公園は「日本さくら名所100選」に選ばれています"], it: 'Okazaki Castle', jp: '岡崎城', img: 'city-castle.webp', credit: '', copy: '天下人のふるさとで、乾杯。', desc: '徳川家康が生まれた城。乙川のほとりの岡崎公園に、白い天守がそびえます。', menuId: 'default_0', menuName: 'お好み焼き' },
-      { key: 'park', day: '2日目　昼　幸田町へ', trivia: ["幸田中央公園は、JR幸田駅から歩いて7分ほど", "幸田文化公園の桜の見ごろは、例年4月上旬から中旬", "しだれ桜の品種は、ヤエベニシダレザクラやウジョウシダレザクラなど"], it: 'Kota Parks', jp: '幸田中央公園・幸田文化公園', short: '幸田の公園', img: 'city-park.webp', credit: '幸田中央公園（写真：幸田町観光協会）', img2: 'city-park2.webp', credit2: '幸田文化公園のしだれ桜（写真：幸田町観光協会）', creditNote: '写真：幸田町観光協会', copy: '2つの公園で、ひと休みの乾杯。', desc: '幸田町の真ん中にある、2つの公園をめぐります。', parts: [{ h: '幸田中央公園', t: '幸田町役場のとなりにある、町の真ん中の公園。長いすべり台もあって、町のみんなの憩いの場です。' }, { h: '幸田文化公園', t: '約20種・500本の桜が植えられ、そのうち約350本が花笠のように垂れるしだれ桜。4月上旬〜中旬には「幸田しだれ桜まつり」が開かれます。' }], menuId: 'default_1', menuName: '焼きそば' },
-      { key: 'honkoji', day: '2日目　夕方　本光寺へ', trivia: ["「三河のあじさい寺」。6月の紫陽花まつりには、約1万本のあじさいが咲きます", "山門に掲げられた「瑞雲山」は、本光寺の山号です", "深溝（ふこうず）松平家の菩提寺。宝物館は、紫陽花まつりの期間だけ公開されます"], it: 'Honkoji', jp: '本光寺', img: 'city-honkoji.webp', credit: '写真：幸田町観光協会', copy: 'あじさいの参道で、乾杯。', desc: '幸田町深溝にある、深溝松平家ゆかりのお寺。石畳の参道の両側に、あじさいがあふれるように咲きます。', menuId: 'default_1', menuName: '焼きそば' },
-      { key: 'boteko', day: '2日目　夜　ぼてこ幸田に到着！', trivia: ["<b>1961年創業、進化し続けるこだわりの味</b><br>創業以来、ぼてこはおいしいお好み焼を追求して、先代からの味を守りながら常に進化。生地・ソース・マヨネーズ・麺すべてにおいてこだわりがあります。<br>ぜひ、ご堪能ください！！"], it: 'BOTECO Kota', jp: 'ぼてこ幸田', img: 'city-boteko.webp', fit: true, credit: '', copy: 'ゴール！工場出荷から2日以内の生ビールで、乾杯！', desc: 'アサヒビール名古屋工場から、マルト水谷を通って届いた新鮮な生ビール。アツアツの鉄板のお好み焼きと一緒にどうぞ。', menuId: 'default_0', menuName: 'お好み焼き' }
+      { key: 'maruto', day: '1日目　マルト水谷に到着', trivia: ["春日井市を拠点に、飲食店向けのお酒や業務用食品を届けている会社です", "「生ビール」は、熱で殺菌していないビールのこと。だからこそ鮮度がいのち", "ビール工場から出荷された新鮮なビールは、朝いちばんに集荷して、その日のうちにお店へ向かいます"], it: 'Maruto Mizutani', jp: 'マルト水谷', img: 'image/city-maruto.webp', credit: '', copy: 'ビール工場から出荷された新鮮なビールが、マルト水谷に到着！', desc: 'アサヒビール名古屋工場から出荷された新鮮なビールが、マルト水谷へ。朝いちばんに集荷して、岡崎へ出発します。', menuId: 'default_2', menuName: '生ビール' },
+      { key: 'castle', day: '2日目　朝　岡崎へ', trivia: ["徳川家康は1542年、この岡崎城で生まれました", "いまの天守は、1959年に復元されたもの", "岡崎公園は「日本さくら名所100選」に選ばれています"], it: 'Okazaki Castle', jp: '岡崎城', img: 'image/city-castle.webp', credit: '', copy: '天下人のふるさとで、乾杯。', desc: '徳川家康が生まれた城。乙川のほとりの岡崎公園に、白い天守がそびえます。', menuId: 'default_0', menuName: 'お好み焼き' },
+      { key: 'park', day: '2日目　昼　幸田町へ', trivia: ["幸田中央公園は、JR幸田駅から歩いて7分ほど", "幸田文化公園の桜の見ごろは、例年4月上旬から中旬", "しだれ桜の品種は、ヤエベニシダレザクラやウジョウシダレザクラなど"], it: 'Kota Parks', jp: '幸田中央公園・幸田文化公園', short: '幸田の公園', img: 'image/city-park.webp', credit: '幸田中央公園（写真：幸田町観光協会）', img2: 'image/city-park2.webp', credit2: '幸田文化公園のしだれ桜（写真：幸田町観光協会）', creditNote: '写真：幸田町観光協会', copy: '2つの公園で、ひと休みの乾杯。', desc: '幸田町の真ん中にある、2つの公園をめぐります。', parts: [{ h: '幸田中央公園', t: '幸田町役場のとなりにある、町の真ん中の公園。長いすべり台もあって、町のみんなの憩いの場です。' }, { h: '幸田文化公園', t: '約20種・500本の桜が植えられ、そのうち約350本が花笠のように垂れるしだれ桜。4月上旬〜中旬には「幸田しだれ桜まつり」が開かれます。' }], menuId: 'default_1', menuName: '焼きそば' },
+      { key: 'honkoji', day: '2日目　夕方　本光寺へ', trivia: ["「三河のあじさい寺」。6月の紫陽花まつりには、約1万本のあじさいが咲きます", "山門に掲げられた「瑞雲山」は、本光寺の山号です", "深溝（ふこうず）松平家の菩提寺。宝物館は、紫陽花まつりの期間だけ公開されます"], it: 'Honkoji', jp: '本光寺', img: 'image/city-honkoji.webp', credit: '写真：幸田町観光協会', copy: 'あじさいの参道で、乾杯。', desc: '幸田町深溝にある、深溝松平家ゆかりのお寺。石畳の参道の両側に、あじさいがあふれるように咲きます。', menuId: 'default_1', menuName: '焼きそば' },
+      { key: 'boteko', day: '2日目　夜　ぼてこ幸田に到着！', trivia: ["<b>1961年創業、進化し続けるこだわりの味</b><br>創業以来、ぼてこはおいしいお好み焼を追求して、先代からの味を守りながら常に進化。生地・ソース・マヨネーズ・麺すべてにおいてこだわりがあります。<br>ぜひ、ご堪能ください！！"], it: 'BOTECO Kota', jp: 'ぼてこ幸田', img: 'image/city-boteko.webp', fit: true, credit: '', copy: 'ゴール！工場出荷から2日以内の生ビールで、乾杯！', desc: 'アサヒビール名古屋工場から、マルト水谷を通って届いた新鮮な生ビール。アツアツの鉄板のお好み焼きと一緒にどうぞ。', menuId: 'default_0', menuName: 'お好み焼き' }
     ];
     // 名所の写真がまだ無いときは、名前入りの仮の絵にする（city-◯◯.webp を置けば差し替わる）
     const mfCityPlaceholder = (c) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9a8"/><stop offset="1" stop-color="#e98766"/></linearGradient></defs><rect width="400" height="600" fill="url(#g)"/><text x="200" y="300" font-family="sans-serif" font-weight="900" font-size="44" fill="#fff" text-anchor="middle">${c.jp}</text><text x="200" y="350" font-family="sans-serif" font-weight="700" font-size="20" fill="#fff" text-anchor="middle" opacity=".85">写真準備中</text></svg>`);
@@ -5824,7 +5823,7 @@
         <button type="button" class="mf-b-bar"><span>📖 ${c.jp}の紹介を見る</span><i>︽</i></button>
         <div class="mf-b-body">
         <button type="button" class="mf-b-fold">写真を見る ︾</button>
-        <img class="bt-b-chara" src="chara.webp" alt="">
+        <img class="bt-b-chara" src="image/chara.webp" alt="">
         <p class="mf-b-no">STOP ${String(ci + 1).padStart(2, '0')} / 05</p>
         <p class="mf-b-it bt-name"><span class="bt-name-jp">${c.jp}</span><span class="bt-name-en">${c.it}</span></p>
         <div class="mf-b-line"></div>
@@ -5905,7 +5904,7 @@
     }
     // 地図の下の案内：ぼてこのロゴと一体の札（ぼてこちゃんがのぞく）
     function mfSetPill(el, html) {
-      el.innerHTML = `<img class="mf-pill-logo" src="logo-banner.webp" alt="ぼてこ"><span class="mf-pill-txt">${html}</span><img class="mf-pill-chara" src="chara.webp" alt="">`;
+      el.innerHTML = `<img class="mf-pill-logo" src="image/logo-banner.webp" alt="ぼてこ"><span class="mf-pill-txt">${html}</span><img class="mf-pill-chara" src="image/chara.webp" alt="">`;
     }
     // 出発前：アサヒビール名古屋工場から出荷 → マルト水谷 → ぼてこ幸田まで2日以内
     const BT_ASAHI_AUTO_HIDE_MS = 8000;
